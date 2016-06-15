@@ -2,6 +2,7 @@ import isFunction from './isFunction';
 import isObject from './isObject';
 import slice from './slice';
 import {merge, assign} from './merge';
+import {mergeMethods} from "./merge";
 
 const isDescriptor = isObject;
 
@@ -68,7 +69,7 @@ function mergeComposable(dstDescriptor, srcComposable) {
     action(dstDescriptor[propName], srcDescriptor[propName]);
   };
 
-  combineProperty('methods', assign);
+  combineProperty('mergeMethodStrategies', assign);
   combineProperty('properties', assign);
   combineProperty('deepProperties', merge);
   combineProperty('propertyDescriptors', assign);
@@ -77,6 +78,16 @@ function mergeComposable(dstDescriptor, srcComposable) {
   combineProperty('staticPropertyDescriptors', assign);
   combineProperty('configuration', assign);
   combineProperty('deepConfiguration', merge);
+
+  if (isObject(srcDescriptor.methods)) {
+    if (!isObject(dstDescriptor.methods)) dstDescriptor.methods = {};
+    mergeMethods(
+        dstDescriptor.methods
+        , srcDescriptor.methods
+        , (isObject(dstDescriptor.mergeMethodStrategies) ? dstDescriptor.mergeMethodStrategies : {})
+    )
+  }
+
   if (Array.isArray(srcDescriptor.initializers)) {
     dstDescriptor.initializers = srcDescriptor.initializers.reduce((result, init) => {
       if (isFunction(init) && result.indexOf(init) < 0) {
