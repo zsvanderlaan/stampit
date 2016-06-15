@@ -1,42 +1,60 @@
-import _ from 'lodash';
-import compose, {merge} from 'stamp-specification';
+import compose from './compose';
 import isComposable from '../isComposable';
 import isStamp from '../isStamp';
+import isFunction from './isFunction';
+import isObject from './isObject';
+import slice from './slice';
+import {merge, assign} from './merge';
+import values from './values';
 
-function extractFunctions(...args) {
-  const functions = args.reduce((result, arg) => {
-    if (_.isFunction(arg)) { return result.concat(arg); }
-    if (Array.isArray(arg)) { return result.concat(extractFunctions(...arg) || []); }
-    if (_.isObject(arg)) { return result.concat(extractFunctions(...Object.values(arg)) || []); }
+function extractFunctions() {
+  const functions = slice.call(arguments).reduce((result, arg) => {
+    if (isFunction(arg)) {
+      return result.concat(arg);
+    }
+    if (Array.isArray(arg)) {
+      return result.concat(extractFunctions.apply(null, arg) || []);
+    }
+    if (isObject(arg)) {
+      return result.concat(extractFunctions.apply(null, values(arg)) || []);
+    }
     return result;
   }, []);
   return functions.length === 0 ? undefined : functions;
 }
 
+function composeArgsCall(self, propName, action, args) {
+  const descriptor = {};
+  descriptor[propName] = action.apply(null, [{}].concat(slice.call(args)));
+  return (self.compose || compose).call(self, descriptor);
+}
+
 const rawUtilities = {
-  methods(...args) {
-    return (this.compose || compose).call(this, {methods: Object.assign({}, ...args)});
+  methods() {
+    return composeArgsCall(this, 'methods', assign, arguments);
   },
-  properties(...args) {
-    return (this.compose || compose).call(this, {properties: Object.assign({}, ...args)});
+  properties() {
+    return composeArgsCall(this, 'properties', assign, arguments);
   },
-  initializers(...args) {
-    return (this.compose || compose).call(this, {initializers: extractFunctions(...args)});
+  initializers() {
+    return (this.compose || compose).call(this, {
+      initializers: extractFunctions.apply(null, slice.call(arguments))
+    });
   },
-  deepProperties(...args) {
-    return (this.compose || compose).call(this, {deepProperties: merge({}, ...args)});
+  deepProperties() {
+    return composeArgsCall(this, 'deepProperties', merge, arguments);
   },
-  staticProperties(...args) {
-    return (this.compose || compose).call(this, {staticProperties: Object.assign({}, ...args)});
+  staticProperties() {
+    return composeArgsCall(this, 'staticProperties', assign, arguments);
   },
-  staticDeepProperties(...args) {
-    return (this.compose || compose).call(this, {staticDeepProperties: merge({}, ...args)});
+  staticDeepProperties() {
+    return composeArgsCall(this, 'staticDeepProperties', merge, arguments);
   },
-  configuration(...args) {
-    return (this.compose || compose).call(this, {configuration: Object.assign({}, ...args)});
+  configuration() {
+    return composeArgsCall(this, 'configuration', assign, arguments);
   },
-  deepConfiguration(...args) {
-    return (this.compose || compose).call(this, {deepConfiguration: merge({}, ...args)});
+  deepConfiguration() {
+    return composeArgsCall(this, 'deepConfiguration', merge, arguments);
   }
 };
 
@@ -69,26 +87,26 @@ function standardiseDescriptor({
   deepConfiguration,
   deepConf
 } = {}) {
-  const p = _.isObject(props) || _.isObject(refs) || _.isObject(properties) ?
-    Object.assign({}, props, refs, properties) : undefined;
+  const p = isObject(props) || isObject(refs) || isObject(properties) ?
+    assign({}, props, refs, properties) : undefined;
 
-  let dp = _.isObject(deepProps) ? merge({}, deepProps) : undefined;
-  dp = _.isObject(deepProperties) ? merge(dp, deepProperties) : dp;
+  let dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
+  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
 
-  const sp = _.isObject(statics) || _.isObject(staticProperties) ?
-    Object.assign({}, statics, staticProperties) : undefined;
+  const sp = isObject(statics) || isObject(staticProperties) ?
+    assign({}, statics, staticProperties) : undefined;
 
-  let dsp = _.isObject(deepStatics) ? merge({}, deepStatics) : undefined;
-  dsp = _.isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
+  let dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
+  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
 
-  const c = _.isObject(conf) || _.isObject(configuration) ?
-    Object.assign({}, conf, configuration) : undefined;
+  const c = isObject(conf) || isObject(configuration) ?
+    assign({}, conf, configuration) : undefined;
 
-  let dc = _.isObject(deepConf) ? merge({}, deepConf) : undefined;
-  dc = _.isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
+  let dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
+  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
 
   return {
-    methods: methods,
+    methods,
     properties: p,
     initializers: extractFunctions(init, initializers),
     deepProperties: dp,
@@ -102,7 +120,7 @@ function standardiseDescriptor({
 }
 
 const baseStampit = compose({
-  staticProperties: Object.assign({
+  staticProperties: assign({
     refs: rawUtilities.properties,
     props: rawUtilities.properties,
     init: rawUtilities.initializers,
@@ -112,22 +130,22 @@ const baseStampit = compose({
     conf: rawUtilities.configuration,
     deepConf: rawUtilities.deepConfiguration,
 
-    create(...args) {
-      return this(...args);
+    create() {
+      return this.apply(undefined, arguments);
     },
 
-    compose(...args) {
-      return compose(this, ...args.filter(isComposable)
+    compose() {
+      return compose.apply(this, slice.call(arguments).filter(isComposable)
         .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg)));
     }
   }, rawUtilities)
 });
 
-function stampit(...args) {
-  return baseStampit.compose(...args);
+function stampit() {
+  return baseStampit.compose.apply(baseStampit, slice.call(arguments));
 }
 
-export default Object.assign(stampit,
+export default assign(stampit,
   {
     isStamp,
     isComposable,

@@ -1,5 +1,3 @@
-import isObject from 'lodash/isObject';
+import isObject from './src/isObject';
 
-export default function isComposable(obj) {
-  return isObject(obj);
-}
+export default isObject;
