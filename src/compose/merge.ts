@@ -1,5 +1,5 @@
-import isObject from './isObject';
-import slice from './slice';
+import isObject from '../utilities/isObject';
+import slice from '../utilities/slice';
 
 function mergeOne(dst, src, shallow) {
   if (src === undefined) return dst;
