@@ -1,7 +1,18 @@
-import isObject from '../utilities/isObject';
 import slice from '../utilities/slice';
 import {mergeComposable} from './mergeComposable';
 import {createStamp} from './createStamp';
+import {Composable, isComposable} from "./composable";
+import {BaseDescriptor} from "../descriptor/baseDescriptor";
+
+// this is probably going to end up being baseDescriptor in the end
+// interface StampDescriptor extends Object or Function {
+//
+// }
+
+export interface Stamp extends Function, BaseDescriptor {
+
+}
+
 
 /**
  * Given the list of composables (stamp descriptors and stamps) returns
@@ -9,10 +20,10 @@ import {createStamp} from './createStamp';
  * @param {...(object|Function)} [composables] The list of composables.
  * @returns {Function} A new stamp (aka composable factory function).
  */
-export default function compose(...composables: Array<Object | Function>): Function {
+export default function compose(...composables: Array<any | Composable>): Stamp {
   const descriptor = [this]
     .concat(slice.call(composables))
-    .filter(isObject)
+    .filter(isComposable)
     .reduce(mergeComposable, {});
   return createStamp(descriptor, compose);
 }

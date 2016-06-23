@@ -11,6 +11,11 @@ const isDescriptor = isObject;
  * @returns {object} Returns the dstDescriptor argument.
  */
 export function mergeComposable(dstDescriptor, srcComposable) {
+  
+  // Based on usage in compose dstDescriptor is the result of { } being merged with
+  // each Stamp (Object | Function), while srcComposable is the stamp that is being
+  // merged into dstDescriptor
+  
     const srcDescriptor = (srcComposable && srcComposable.compose) || srcComposable;
     if (!isDescriptor(srcDescriptor)) return dstDescriptor;
 

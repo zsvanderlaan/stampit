@@ -1,4 +1,6 @@
-export interface LegacyDescriptor {
+import {Composable} from "../compose/compose";
+
+export interface LegacyDescriptor extends Composable {
 
     methods?: Object;
 
