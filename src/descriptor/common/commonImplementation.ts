@@ -1,17 +1,18 @@
-import compose from '../compose/compose';
-import slice from '../utilities/slice';
-import isStamp from '../utilities/isStamp';
-import {standardiseDescriptor} from './standardiseDescriptor';
-import {Composable} from "../compose/compose";
-import {isComposable} from "../compose/composable";
-import {Stamp} from "../compose/compose";
+import compose from '../../compose/compose';
+import slice from '../../utilities/slice';
+import isStamp from '../../utilities/isStamp';
+import {standardiseDescriptor} from '../standardiseDescriptor';
+import {Composable} from "../../compose/compose";
+import {isComposable} from "../../compose/composable";
+import {Stamp} from "../../compose/compose";
 
-export interface CoreImplementation {
+export interface CommonImplementation {
   create(...composables: Array<any | Composable>): Stamp;
   compose(...composables: Array<any | Composable>): Stamp;
 }
 
-export const coreImplementation = {
+export const commonImplementation: CommonImplementation = {
+
     create(...composables: Array<any | Composable>): Stamp {
         return this.apply(undefined, composables);
     },

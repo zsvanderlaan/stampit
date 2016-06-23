@@ -1,13 +1,4 @@
-export interface BaseDescriptor {
+import {LegacyDescriptor} from './legacy/legacyDescriptor';
+import {SpecificationDescriptor} from './specification/specificationDescriptor';
 
-    methods?: Object;
-    properties?: Object;
-    initializers?: Array<Function>;
-    deepProperties?: Object;
-    staticProperties?: Object;
-    staticDeepProperties?: Object;
-    propertyDescriptors?: Object;
-    staticPropertyDescriptors?: Object;
-    configuration?: Object;
-    deepConfiguration?: Object;
-}
+export interface BaseDescriptor extends SpecificationDescriptor, LegacyDescriptor { }

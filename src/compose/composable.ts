@@ -1,7 +1,7 @@
 import {Stamp} from "./compose";
-import {LegacyDescriptor} from "../descriptor/legacyDescriptor";
+import {BaseDescriptor} from '../descriptor/baseDescriptor';
 
-export type Composable = LegacyDescriptor | Stamp;
+export type Composable = BaseDescriptor | Stamp;
 
 export function isComposable(target: any | Composable): target is Composable {
   const type = typeof target;

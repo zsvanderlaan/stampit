@@ -2,6 +2,8 @@ import isFunction from '../utilities/isFunction';
 import slice from '../utilities/slice';
 import {merge, assign} from './merge';
 import {createFactory} from './createFactory';
+import {Stamp, Compose} from './compose';
+import {BaseDescriptor} from '../descriptor/baseDescriptor';
 
 
 /**
@@ -10,7 +12,7 @@ import {createFactory} from './createFactory';
  * @param {Function} composeFunction The "compose" function implementation.
  * @returns {Function}
  */
-export function createStamp(descriptor, composeFunction) {
+export function createStamp(descriptor: BaseDescriptor, composeFunction: Compose): Stamp {
     const Stamp = createFactory(descriptor);
 
     merge(Stamp, descriptor.staticDeepProperties);

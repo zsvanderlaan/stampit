@@ -1,10 +1,10 @@
 import compose from './compose/compose';
 import {assign} from './compose/merge';
-import {coreImplementation} from './descriptor/coreImplementation';
-import {descriptorImplementation} from './descriptor/descriptorImplementation';
-import {legacyDescriptorImplementation} from './descriptor/legacyDescriptorImplementation';
+import {commonImplementation} from './descriptor/common/commonImplementation';
+import {specificationImplementation} from './descriptor/specification/specificationImplementation';
+import {legacyImplementation} from './descriptor/legacy/legacyImplementation';
 
-const descriptorImplementation = assign(legacyDescriptorImplementation, descriptorImplementation);
-const staticProperties = assign(descriptorImplementation, coreImplementation);
+const descriptorImplementation = assign(legacyImplementation, specificationImplementation);
+const staticProperties = assign(descriptorImplementation, commonImplementation);
 
 export const baseStampit = compose({ staticProperties: staticProperties });
