@@ -1,6 +1,8 @@
 import {specificationImplementation} from '../specification/specificationImplementation';
+import {CommonImplementation, commonImplementation} from '../common/commonImplementation';
+import {assign} from '../../compose/merge';
 
-export interface LegacyImplementation {
+export interface LegacyImplementation extends CommonImplementation {
     refs(...args: Array<Object>): any;
     props(...args: Array<Object>): any;
     init(...args: Array<Function>): any;
@@ -11,7 +13,7 @@ export interface LegacyImplementation {
     deepConf(...args: Array<Object>): any;
 }
 
-export const legacyImplementation: LegacyImplementation = {
+export const legacyImplementation: LegacyImplementation = assign({
     refs: specificationImplementation.properties,
     props: specificationImplementation.properties,
     init: specificationImplementation.initializers,
@@ -20,4 +22,4 @@ export const legacyImplementation: LegacyImplementation = {
     deepStatics: specificationImplementation.staticDeepProperties,
     conf: specificationImplementation.configuration,
     deepConf: specificationImplementation.deepConfiguration,
-};
+}, commonImplementation);
