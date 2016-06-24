@@ -14,21 +14,17 @@ export interface CommonImplementation {
 }
 
 export const commonImplementation: CommonImplementation = {
-    create: create
-    , compose: compose
+    create: function (...composables: Array<any | Composable>): Stamp {
+        return this.apply(undefined, composables);
+    }
+    , compose: function (...composables: Array<any | Composable>): Stamp {
+        return compose.apply(
+            this
+            , slice.call(composables)
+                   .filter(isComposable)
+                   .map((arg: Composable) => isStamp(arg) ? arg : standardiseDescriptor(arg))
+        );
+    }
     , isComposable: isComposable
     , isStamp: isStamp
 };
-
-function create(...composables: Array<any | Composable>): Stamp {
-    return this.apply(undefined, composables);
-}
-
-function compose(...composables: Array<any | Composable>): Stamp {
-    return compose.apply(
-        this
-        , slice.call(composables)
-               .filter(isComposable)
-               .map((arg: Composable) => isStamp(arg) ? arg : standardiseDescriptor(arg))
-    );
-}

@@ -1,14 +1,15 @@
 import {merge, assign} from './merge';
 import isFunction from '../utilities/isFunction';
 import slice from '../utilities/slice';
+import {BaseDescriptor} from '../descriptor/baseDescriptor';
 
 /**
  * Creates new factory instance.
  * @param {object} descriptor The information about the object the factory will be creating.
  * @returns {Function} The new factory function.
  */
-export function createFactory(descriptor) {
-    return function Stamp(options) {
+export function createFactory(descriptor: BaseDescriptor): (options: BaseDescriptor) => any {
+    return function Stamp(options: any = {}, ...args: Array<any>) {
         const obj = Object.create(descriptor.methods || {});
 
         merge(obj, descriptor.deepProperties);
@@ -17,8 +18,6 @@ export function createFactory(descriptor) {
 
         if (!descriptor.initializers || descriptor.initializers.length === 0) return obj;
 
-        const args = slice.call(arguments, 1);
-        if (options === undefined) options = {};
         return descriptor.initializers.filter(isFunction).reduce((resultingObj, initializer) => {
             const returnedValue = initializer.call(resultingObj, options,
                                                    {instance: resultingObj, stamp: Stamp, args: [options].concat(args)});
