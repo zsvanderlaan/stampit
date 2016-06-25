@@ -3,18 +3,20 @@ import {mergeComposable} from './mergeComposable';
 import {createStamp} from './createStamp';
 import {Composable, isComposable} from "./composable";
 import {BaseDescriptor} from '../descriptor/baseDescriptor';
+import {BaseImplementation} from "../descriptor/baseImplementation";
+import {Factory} from "./createFactory";
 
 // a stamp is a generic type.
 // this will need to be widened so that
 // let stamp: Stamp<ResultType> = compose<ResultType>(composable1: Composable, composable2: Composable)
-export interface Stamp extends Function, BaseDescriptor, Composer { }
+export interface Stamp extends Factory, BaseImplementation { }
 
 export interface Compose {
   (...composables: Array<any | Composable>): Stamp
 }
 
 export interface Composer {
-  compose?(): Compose
+  compose(...composables: Array<any | Composable>): Stamp;
 }
 
 export function isComposer(target: any | Composer): target is Composer {

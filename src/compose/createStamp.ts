@@ -1,7 +1,7 @@
 import slice from '../utilities/slice';
 import {merge, assign} from './merge';
-import {createFactory, Factory} from './createFactory';
-import {Stamp, Compose, isComposer} from './compose';
+import {createFactory, Factory, FactoryBase, isFactory} from './createFactory';
+import {Stamp, Compose} from './compose';
 import {BaseDescriptor} from '../descriptor/baseDescriptor';
 
 
@@ -12,17 +12,17 @@ import {BaseDescriptor} from '../descriptor/baseDescriptor';
  * @returns {Function}
  */
 export function createStamp(descriptor: BaseDescriptor, composeFunction: Compose): Stamp {
-    const Stamp: Factory = createFactory(descriptor);
+    const Stamp: Factory | FactoryBase = createFactory(descriptor);
 
     merge(Stamp, descriptor.staticDeepProperties);
     assign(Stamp, descriptor.staticProperties);
     Object.defineProperties(Stamp, descriptor.staticPropertyDescriptors || {});
 
-    const composeImplementation: Compose = isComposer(Stamp) ? Stamp.compose : composeFunction;
-    Stamp.compose = function _compose() {
-        return composeImplementation.apply(this, slice.call(arguments));
+    const composeImplementation: Compose = isFactory(Stamp) ? Stamp.compose : composeFunction;
+    (Stamp as Factory).compose = function _compose(...args: Array<any>) {
+        return composeImplementation.apply(this, slice.call(args));
     };
-    assign(Stamp.compose, descriptor);
+    assign((Stamp as Factory).compose, descriptor);
 
-    return Stamp;
+    return Stamp as Stamp;
 }

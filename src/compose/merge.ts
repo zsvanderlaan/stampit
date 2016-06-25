@@ -31,10 +31,13 @@ function mergeFew(dst, srcs, shallow) {
   return srcs.reduce((target, src) => mergeOne(target, src, shallow), dst);
 }
 
-export function assign(dst) {
-  return mergeFew(dst, slice.call(arguments, 1), true);
+// the spread operator for args may result in slice.call(args, 1) to be incorrect
+// todo: research and consider changing to slice.call(args, 0) for assign() and merge()
+
+export function assign(dst, ...args: Array<any>) {
+  return mergeFew(dst, slice.call(args, 1), true);
 }
 
-export function merge(dst) {
-  return mergeFew(dst, slice.call(arguments, 1), false);
+export function merge(dst, ...args: Array<any>) {
+  return mergeFew(dst, slice.call(args, 1), false);
 }
