@@ -1,15 +1,21 @@
 import {merge, assign} from './merge';
 import isFunction from '../utilities/isFunction';
-import slice from '../utilities/slice';
 import {BaseDescriptor} from '../descriptor/baseDescriptor';
+import {Composer} from "./compose";
+
+export interface FactoryBase {
+  (options: any = {}, ...args: Array<any>): any;
+}
+
+export interface Factory extends FactoryBase, Composer { }
 
 /**
  * Creates new factory instance.
  * @param {object} descriptor The information about the object the factory will be creating.
  * @returns {Function} The new factory function.
  */
-export function createFactory(descriptor: BaseDescriptor): (options: BaseDescriptor) => any {
-    return function Stamp(options: any = {}, ...args: Array<any>) {
+export function createFactory(descriptor: BaseDescriptor): Factory {
+    return function Stamp(options: any = {}, ...args: Array<any>): any {
         const obj = Object.create(descriptor.methods || {});
 
         merge(obj, descriptor.deepProperties);

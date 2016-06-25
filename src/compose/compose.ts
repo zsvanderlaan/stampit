@@ -7,10 +7,18 @@ import {BaseDescriptor} from '../descriptor/baseDescriptor';
 // a stamp is a generic type.
 // this will need to be widened so that
 // let stamp: Stamp<ResultType> = compose<ResultType>(composable1: Composable, composable2: Composable)
-export interface Stamp extends Function, BaseDescriptor { }
+export interface Stamp extends Function, BaseDescriptor, Composer { }
 
 export interface Compose {
   (...composables: Array<any | Composable>): Stamp
+}
+
+export interface Composer {
+  compose?(): Compose
+}
+
+export function isComposer(target: any | Composer): target is Composer {
+  return (undefined !== (target as Composer).compose);
 }
 
 /**
