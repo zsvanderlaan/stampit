@@ -1,5 +1,5 @@
-import {Stamp} from '../../compose/compose';
 import {Composable} from '../../compose/composable';
+import {Stamp} from "../../stampit";
 
 export interface CommonDescriptor {
     create?(...composables: Array<any | Composable>): Stamp;

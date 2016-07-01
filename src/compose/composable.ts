@@ -1,5 +1,5 @@
-import {Stamp} from "./compose";
 import {BaseDescriptor} from '../descriptor/baseDescriptor';
+import {Stamp} from "../stampit";
 
 export type Composable = BaseDescriptor | Stamp;
 

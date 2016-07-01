@@ -3,7 +3,7 @@ import slice from '../../utilities/slice';
 import isStamp from '../../utilities/isStamp';
 import {standardiseDescriptor} from '../standardiseDescriptor';
 import {isComposable, Composable} from "../../compose/composable";
-import {Stamp} from "../../compose/compose";
+import {Stamp} from "../../stampit";
 
 export interface CommonImplementation {
   create(...composables: Array<any | Composable>): Stamp;
